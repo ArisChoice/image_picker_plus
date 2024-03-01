@@ -146,7 +146,7 @@ class CustomCameraDisplayState extends State<CustomCameraDisplay> {
                   alignment: Alignment.topCenter,
                   child: Container(
                     color: whiteColor,
-                    height: 360,
+                    height: 460,
                     width: double.infinity,
                     child: buildCrop(selectedImage),
                   ),

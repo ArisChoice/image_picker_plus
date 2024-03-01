@@ -77,6 +77,7 @@ class CustomCropState extends State<CustomCrop> with TickerProviderStateMixin {
           _area.width * _view.width / _scale,
           _area.height * _view.height / _scale,
         );
+
   bool get _isEnabled => _view.isEmpty == false && _image != null;
 
   final Map<double, double> _maxAreaWidthMap = {};
@@ -305,7 +306,15 @@ class CustomCropState extends State<CustomCrop> with TickerProviderStateMixin {
   }
 
   Widget buildCustomPaint() {
+    print("buildCustomPaint " + widget.image.toString());
+    print("buildCustomPaint ratio " + _ratio.toString());
+    print("buildCustomPaint view " + _view.toString());
+    print("buildCustomPaint area " + _area.toString());
+    print("buildCustomPaint scale " + _scale.toString());
+    print("buildCustomPaint " + _activeController.value.toString());
+
     return CustomPaint(
+      child: _view.isEmpty ? Image.file(widget.image) : SizedBox(),
       painter: _CropPainter(
         image: _image,
         ratio: _ratio,
@@ -622,6 +631,7 @@ class _CropPainter extends CustomPainter {
 
 class _DisplayVideo extends StatefulWidget {
   final File selectedFile;
+
   const _DisplayVideo({Key? key, required this.selectedFile}) : super(key: key);
 
   @override

@@ -12,6 +12,7 @@ class CustomImagePicker extends StatefulWidget {
   final bool multiSelection;
   final GalleryDisplaySettings? galleryDisplaySettings;
   final PickerSource pickerSource;
+
   const CustomImagePicker({
     required this.source,
     required this.multiSelection,
@@ -127,6 +128,10 @@ class CustomImagePickerState extends State<CustomImagePicker>
               setState(() {
                 if (!redDeleteText.value) {
                   redDeleteText.value = true;
+                  selectedCameraImage.value = null;
+                  clearVideoRecord.value = true;
+                  showDeleteText.value = false;
+                  redDeleteText.value = false;
                 } else {
                   selectedCameraImage.value = null;
                   clearVideoRecord.value = true;

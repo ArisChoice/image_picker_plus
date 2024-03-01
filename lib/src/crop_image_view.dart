@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:image_picker_plus/src/custom_expand_icon.dart';
 import 'package:image_picker_plus/src/entities/app_theme.dart';
@@ -48,6 +49,15 @@ class CropImageView extends StatefulWidget {
 class _CropImageViewState extends State<CropImageView> {
   @override
   Widget build(BuildContext context) {
+    try {
+      print("build "+widget.selectedImage.value!.toString());
+      print("build "+widget.indexOfSelectedImages.value!.toString());
+      setState(() {
+
+      });
+    } catch (e) {
+      print(e);
+    }
     return ValueListenableBuilder(
       valueListenable: widget.enableVerticalTapping,
       builder: (context, bool enableTappingValue, child) => GestureDetector(
@@ -87,6 +97,7 @@ class _CropImageViewState extends State<CropImageView> {
 
   Container showSelectedImage(BuildContext context, File selectedImageValue) {
     double width = MediaQuery.of(context).size.width;
+    print("showSelectedImage "+selectedImageValue.path!.toString());
     return Container(
       key: GlobalKey(debugLabel: "have image"),
       color: widget.whiteColor,
@@ -169,6 +180,7 @@ class _CropImageViewState extends State<CropImageView> {
     GlobalKey<CustomCropState> cropKey = widget.cropKey.value;
     String path = selectedImageValue.path;
     bool isThatVideo = path.contains("mp4", path.length - 5);
+
     return CustomCrop(
       image: selectedImageValue,
       isThatImage: !isThatVideo,
