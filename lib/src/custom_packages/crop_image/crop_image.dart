@@ -306,12 +306,12 @@ class CustomCropState extends State<CustomCrop> with TickerProviderStateMixin {
   }
 
   Widget buildCustomPaint() {
-    print("buildCustomPaint " + widget.image.toString());
-    print("buildCustomPaint ratio " + _ratio.toString());
-    print("buildCustomPaint view " + _view.toString());
-    print("buildCustomPaint area " + _area.toString());
-    print("buildCustomPaint scale " + _scale.toString());
-    print("buildCustomPaint " + _activeController.value.toString());
+    // print("buildCustomPaint " + widget.image.toString());
+    // print("buildCustomPaint ratio " + _ratio.toString());
+    // print("buildCustomPaint view " + _view.toString());
+    // print("buildCustomPaint area " + _area.toString());
+    // print("buildCustomPaint scale " + _scale.toString());
+    // print("buildCustomPaint " + _activeController.value.toString());
 
     return CustomPaint(
       child: _view.isEmpty ? Image.file(widget.image) : SizedBox(),

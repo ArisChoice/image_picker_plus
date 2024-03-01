@@ -49,15 +49,6 @@ class CropImageView extends StatefulWidget {
 class _CropImageViewState extends State<CropImageView> {
   @override
   Widget build(BuildContext context) {
-    try {
-      print("build "+widget.selectedImage.value!.toString());
-      print("build "+widget.indexOfSelectedImages.value!.toString());
-      setState(() {
-
-      });
-    } catch (e) {
-      print(e);
-    }
     return ValueListenableBuilder(
       valueListenable: widget.enableVerticalTapping,
       builder: (context, bool enableTappingValue, child) => GestureDetector(
