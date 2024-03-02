@@ -126,16 +126,16 @@ class _ImagesViewPageState extends State<ImagesViewPage>
       _fetchNewMedia(currentPageValue: currentPageValue);
       return true;
     }
+
     return false;
   }
 
   _fetchNewMedia({required int currentPageValue}) async {
     lastPage.value = currentPageValue;
-    // PermissionState result = await PhotoManager.requestPermissionExtend();
+     PermissionState result = await PhotoManager.requestPermissionExtend();
     // print("_fetchNewMedia  permission "+result.name.toString());
     // print("_fetchNewMedia  permission "+result.isAuth.toString());
-    // print("_fetchNewMedia  permission "+result.name.toString());
-
+    //  print("_fetchNewMedia  permission "+currentPageValue.toString());
     await Permission.photos.onDeniedCallback(() {
       print("onDeniedCallback ");
       Navigator.pop(context);
