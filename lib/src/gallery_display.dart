@@ -96,6 +96,8 @@ class CustomImagePickerState extends State<CustomImagePicker>
     showAllTabs = cameraAndVideoEnabled && noGallery;
     whiteColor = appTheme.primaryColor;
     blackColor = appTheme.focusColor;
+
+
   }
 
   @override
@@ -128,6 +130,7 @@ class CustomImagePickerState extends State<CustomImagePicker>
               setState(() {
                 if (!redDeleteText.value) {
                   redDeleteText.value = true;
+                  // below code is used to delete camera image on single click
                   selectedCameraImage.value = null;
                   clearVideoRecord.value = true;
                   showDeleteText.value = false;

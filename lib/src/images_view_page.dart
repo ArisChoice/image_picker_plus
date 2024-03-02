@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker_plus/image_picker_plus.dart';
 import 'package:image_picker_plus/src/crop_image_view.dart';
 import 'package:image_picker_plus/src/custom_packages/crop_image/crop_image.dart';
@@ -8,6 +9,7 @@ import 'package:image_picker_plus/src/image.dart';
 import 'package:image_picker_plus/src/multi_selection_mode.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -29,6 +31,7 @@ class ImagesViewPage extends StatefulWidget {
   final Color blackColor;
   final bool showImagePreview;
   final SliverGridDelegateWithFixedCrossAxisCount gridDelegate;
+
   const ImagesViewPage({
     Key? key,
     required this.multiSelectedImages,
@@ -107,9 +110,11 @@ class _ImagesViewPageState extends State<ImagesViewPage>
   }
 
   late Widget forBack;
+
   @override
   void initState() {
     _fetchNewMedia(currentPageValue: 0);
+
     super.initState();
   }
 
@@ -125,8 +130,18 @@ class _ImagesViewPageState extends State<ImagesViewPage>
 
   _fetchNewMedia({required int currentPageValue}) async {
     lastPage.value = currentPageValue;
-    PermissionState result = await PhotoManager.requestPermissionExtend();
-    if (result.isAuth) {
+    // PermissionState result = await PhotoManager.requestPermissionExtend();
+    // print("_fetchNewMedia  permission "+result.name.toString());
+    // print("_fetchNewMedia  permission "+result.isAuth.toString());
+    // print("_fetchNewMedia  permission "+result.name.toString());
+
+    await Permission.photos.onDeniedCallback(() {
+      print("onDeniedCallback ");
+       PhotoManager.requestPermissionExtend();
+      // Your code
+    }).onGrantedCallback(() async {
+      print("onGrantedCallback ");
+      // Your code
       RequestType type = widget.showInternalVideos && widget.showInternalImages
           ? RequestType.common
           : (widget.showInternalImages ? RequestType.image : RequestType.video);
@@ -157,11 +172,64 @@ class _ImagesViewPageState extends State<ImagesViewPage>
       selectedImage.value = allImages.value[0];
       currentPage.value++;
       isImagesReady.value = true;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    }).onPermanentlyDeniedCallback(() {
+      // Your code
+      Fluttertoast.showToast(
+          msg: "Gallery permission required to use this feature",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+      );
+      PhotoManager.openSetting();
+      print("onPermanentlyDeniedCallback ");
+      Navigator.pop(context);
+    }).onRestrictedCallback(() {
+      // Your code
+      print("onRestrictedCallback ");
+    }).onLimitedCallback(() {
+      // Your code
+    }).onProvisionalCallback(() {
+      // Your code
+      print("onProvisionalCallback ");
+    }).request();
+    /*if (result.isAuth) {
+      RequestType type = widget.showInternalVideos && widget.showInternalImages
+          ? RequestType.common
+          : (widget.showInternalImages ? RequestType.image : RequestType.video);
+
+      List<AssetPathEntity> albums =
+          await PhotoManager.getAssetPathList(onlyAll: true, type: type);
+      if (albums.isEmpty) {
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => setState(() => noImages = true));
+        return;
+      } else if (noImages) {
+        noImages = false;
+      }
+      List<AssetEntity> media =
+          await albums[0].getAssetListPaged(page: currentPageValue, size: 60);
+      List<FutureBuilder<Uint8List?>> temp = [];
+      List<File?> imageTemp = [];
+
+      for (int i = 0; i < media.length; i++) {
+        FutureBuilder<Uint8List?> gridViewImage =
+            await getImageGallery(media, i);
+        File? image = await highQualityImage(media, i);
+        temp.add(gridViewImage);
+        imageTemp.add(image);
+      }
+      _mediaList.value.addAll(temp);
+      allImages.value.addAll(imageTemp);
+      selectedImage.value = allImages.value[0];
+      currentPage.value++;
+      isImagesReady.value = true;
+
       WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
     } else {
       await PhotoManager.requestPermissionExtend();
       PhotoManager.openSetting();
-    }
+    }*/
   }
 
   Future<FutureBuilder<Uint8List?>> getImageGallery(
