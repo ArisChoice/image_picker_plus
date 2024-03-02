@@ -138,7 +138,12 @@ class _ImagesViewPageState extends State<ImagesViewPage>
 
     await Permission.photos.onDeniedCallback(() {
       print("onDeniedCallback ");
-       PhotoManager.requestPermissionExtend();
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+        msg: "Gallery permission required to use this feature",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+      );
       // Your code
     }).onGrantedCallback(() async {
       print("onGrantedCallback ");
