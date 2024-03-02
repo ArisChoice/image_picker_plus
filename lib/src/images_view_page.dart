@@ -106,6 +106,7 @@ class _ImagesViewPageState extends State<ImagesViewPage>
     scaleOfCropsKeys.dispose();
     areaOfCropsKeys.dispose();
     indexOfSelectedImages.dispose();
+
     super.dispose();
   }
 
