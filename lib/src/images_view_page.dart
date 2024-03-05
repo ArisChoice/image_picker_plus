@@ -136,7 +136,61 @@ class _ImagesViewPageState extends State<ImagesViewPage>
     // print("_fetchNewMedia  permission "+result.name.toString());
     // print("_fetchNewMedia  permission "+result.isAuth.toString());
     //  print("_fetchNewMedia  permission "+currentPageValue.toString());
-    await Permission.photos.onDeniedCallback(() {
+    /*var status = await Permission.mediaLibrary.status;
+    if (status.isDenied) {
+      print("isDenied ");
+      // We haven't asked for permission yet or the permission has been denied before, but not permanently.
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+        msg: "Gallery permission required to use this feature",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+      );
+      return;
+    }
+    if (status.isPermanentlyDenied) {
+      print("isPermanentlyDenied ");
+      PhotoManager.openSetting();
+      return;
+    }
+    if (status.isGranted) {
+      print("onGrantedCallback ");
+      // Your code
+      RequestType type = widget.showInternalVideos && widget.showInternalImages
+          ? RequestType.common
+          : (widget.showInternalImages ? RequestType.image : RequestType.video);
+
+      List<AssetPathEntity> albums =
+      await PhotoManager.getAssetPathList(onlyAll: true, type: type);
+      if (albums.isEmpty) {
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => setState(() => noImages = true));
+        return;
+      } else if (noImages) {
+        noImages = false;
+      }
+      List<AssetEntity> media =
+      await albums[0].getAssetListPaged(page: currentPageValue, size: 60);
+      List<FutureBuilder<Uint8List?>> temp = [];
+      List<File?> imageTemp = [];
+
+      for (int i = 0; i < media.length; i++) {
+        FutureBuilder<Uint8List?> gridViewImage =
+        await getImageGallery(media, i);
+        File? image = await highQualityImage(media, i);
+        temp.add(gridViewImage);
+        imageTemp.add(image);
+      }
+      _mediaList.value.addAll(temp);
+      allImages.value.addAll(imageTemp);
+      selectedImage.value = allImages.value[0];
+      currentPage.value++;
+      isImagesReady.value = true;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    }*/
+
+    await Permission.mediaLibrary.onDeniedCallback(() {
       print("onDeniedCallback ");
       Navigator.pop(context);
       Fluttertoast.showToast(
@@ -199,7 +253,6 @@ class _ImagesViewPageState extends State<ImagesViewPage>
       // Your code
       print("onProvisionalCallback ");
     }).request();
-
 
     /*if (result.isAuth) {
       RequestType type = widget.showInternalVideos && widget.showInternalImages
