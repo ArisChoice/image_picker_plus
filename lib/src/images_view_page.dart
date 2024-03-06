@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker_plus/image_picker_plus.dart';
 import 'package:image_picker_plus/src/crop_image_view.dart';
@@ -132,7 +134,7 @@ class _ImagesViewPageState extends State<ImagesViewPage>
 
   _fetchNewMedia({required int currentPageValue}) async {
     lastPage.value = currentPageValue;
-     PermissionState result = await PhotoManager.requestPermissionExtend();
+    PermissionState result = await PhotoManager.requestPermissionExtend();
     // print("_fetchNewMedia  permission "+result.name.toString());
     // print("_fetchNewMedia  permission "+result.isAuth.toString());
     //  print("_fetchNewMedia  permission "+currentPageValue.toString());
@@ -189,72 +191,82 @@ class _ImagesViewPageState extends State<ImagesViewPage>
 
       WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
     }*/
-
-    await Permission.mediaLibrary.onDeniedCallback(() {
-      print("onDeniedCallback ");
-      Navigator.pop(context);
-      Fluttertoast.showToast(
-        msg: "Gallery permission required to use this feature",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.CENTER,
-      );
-      // Your code
-    }).onGrantedCallback(() async {
-      print("onGrantedCallback ");
-      // Your code
-      RequestType type = widget.showInternalVideos && widget.showInternalImages
-          ? RequestType.common
-          : (widget.showInternalImages ? RequestType.image : RequestType.video);
-
-      List<AssetPathEntity> albums =
-          await PhotoManager.getAssetPathList(onlyAll: true, type: type);
-      if (albums.isEmpty) {
-        WidgetsBinding.instance
-            .addPostFrameCallback((_) => setState(() => noImages = true));
-        return;
-      } else if (noImages) {
-        noImages = false;
-      }
-      List<AssetEntity> media =
-          await albums[0].getAssetListPaged(page: currentPageValue, size: 60);
-      List<FutureBuilder<Uint8List?>> temp = [];
-      List<File?> imageTemp = [];
-
-      for (int i = 0; i < media.length; i++) {
-        FutureBuilder<Uint8List?> gridViewImage =
-            await getImageGallery(media, i);
-        File? image = await highQualityImage(media, i);
-        temp.add(gridViewImage);
-        imageTemp.add(image);
-      }
-      _mediaList.value.addAll(temp);
-      allImages.value.addAll(imageTemp);
-      selectedImage.value = allImages.value[0];
-      currentPage.value++;
-      isImagesReady.value = true;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
-    }).onPermanentlyDeniedCallback(() {
-      // Your code
-      Fluttertoast.showToast(
+    if (Platform.isAndroid) {
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      var release = androidInfo.version.release;
+      var sdkInt = androidInfo.version.sdkInt;
+      var manufacturer = androidInfo.manufacturer;
+      var model = androidInfo.model;
+      log('Android $release (SDK $sdkInt), $manufacturer $model');
+      // Android 9 (SDK 28), Xiaomi Redmi Note 7
+      var permissionType =
+          int.parse(release) > 12 ? Permission.photos : Permission.storage;
+      permissionType.onDeniedCallback(() {
+        print("onDeniedCallback ");
+        Navigator.pop(context);
+        Fluttertoast.showToast(
           msg: "Gallery permission required to use this feature",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.CENTER,
-      );
-      PhotoManager.openSetting();
-      print("onPermanentlyDeniedCallback ");
-      Navigator.pop(context);
-    }).onRestrictedCallback(() {
-      // Your code
-      print("onRestrictedCallback ");
-    }).onLimitedCallback(() {
-      // Your code
-    }).onProvisionalCallback(() {
-      // Your code
-      print("onProvisionalCallback ");
-    }).request();
+        );
+        // Your code
+      }).onGrantedCallback(() async {
+        print("onGrantedCallback ");
+        proceedFlow(currentPageValue);
+      }).onPermanentlyDeniedCallback(() {
+        // Your code
+        showToast();
+        PhotoManager.openSetting();
+        print("onPermanentlyDeniedCallback ");
+        Navigator.pop(context);
+      }).onRestrictedCallback(() {
+        // Your code
+        print("onRestrictedCallback ");
+      }).onLimitedCallback(() {
+        // Your code
+      }).onProvisionalCallback(() {
+        // Your code
+        print("onProvisionalCallback ");
+      }).request();
+    } else if (Platform.isIOS) {
+      var iosInfo = await DeviceInfoPlugin().iosInfo;
+      var systemName = iosInfo.systemName;
+      var version = iosInfo.systemVersion;
+      var name = iosInfo.name;
+      var model = iosInfo.model;
+      log('$systemName $version, $name $model');
+      // iOS 13.1, iPhone 11 Pro Max iPhone
+      var permissionType = Permission.photos;
+      permissionType.onDeniedCallback(() {
+        print("onDeniedCallback ");
+        Navigator.pop(context);
+        Fluttertoast.showToast(
+          msg: "Gallery permission required to use this feature",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+        );
+        // Your code
+      }).onGrantedCallback(() async {
+        print("onGrantedCallback ");
+        proceedFlow(currentPageValue);
+      }).onPermanentlyDeniedCallback(() {
+        // Your code
+        showToast();
+        PhotoManager.openSetting();
+        print("onPermanentlyDeniedCallback ");
+        Navigator.pop(context);
+      }).onRestrictedCallback(() {
+        // Your code
+        print("onRestrictedCallback ");
+      }).onLimitedCallback(() {
+        // Your code
+      }).onProvisionalCallback(() {
+        // Your code
+        print("onProvisionalCallback ");
+      }).request();
+    }
 
-    /*if (result.isAuth) {
+    /* if (result.isAuth) {
       RequestType type = widget.showInternalVideos && widget.showInternalImages
           ? RequestType.common
           : (widget.showInternalImages ? RequestType.image : RequestType.video);
@@ -289,7 +301,13 @@ class _ImagesViewPageState extends State<ImagesViewPage>
       WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
     } else {
       await PhotoManager.requestPermissionExtend();
-      PhotoManager.openSetting();
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+        msg: "Gallery permission required to use this feature",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+      );
+      // PhotoManager.openSetting();
     }*/
   }
 
@@ -871,4 +889,47 @@ class _ImagesViewPageState extends State<ImagesViewPage>
 
   @override
   bool get wantKeepAlive => true;
+
+  Future<void> proceedFlow(int currentPageValue) async {
+    // Your code
+    RequestType type = widget.showInternalVideos && widget.showInternalImages
+        ? RequestType.common
+        : (widget.showInternalImages ? RequestType.image : RequestType.video);
+
+    List<AssetPathEntity> albums =
+        await PhotoManager.getAssetPathList(onlyAll: true, type: type);
+    if (albums.isEmpty) {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => setState(() => noImages = true));
+      return;
+    } else if (noImages) {
+      noImages = false;
+    }
+    List<AssetEntity> media =
+        await albums[0].getAssetListPaged(page: currentPageValue, size: 60);
+    List<FutureBuilder<Uint8List?>> temp = [];
+    List<File?> imageTemp = [];
+
+    for (int i = 0; i < media.length; i++) {
+      FutureBuilder<Uint8List?> gridViewImage = await getImageGallery(media, i);
+      File? image = await highQualityImage(media, i);
+      temp.add(gridViewImage);
+      imageTemp.add(image);
+    }
+    _mediaList.value.addAll(temp);
+    allImages.value.addAll(imageTemp);
+    selectedImage.value = allImages.value[0];
+    currentPage.value++;
+    isImagesReady.value = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  void showToast() {
+    Fluttertoast.showToast(
+      msg: "Gallery permission required to use this feature",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.CENTER,
+    );
+  }
 }

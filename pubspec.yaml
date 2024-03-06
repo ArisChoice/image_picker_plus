@@ -18,6 +18,7 @@ dependencies:
   image_picker: ^1.0.1
   permission_handler:
   fluttertoast: ^8.2.4
+  device_info_plus: ^9.1.2
 
 
 dev_dependencies:
