@@ -204,11 +204,7 @@ class _ImagesViewPageState extends State<ImagesViewPage>
       permissionType.onDeniedCallback(() {
         print("onDeniedCallback ");
         Navigator.pop(context);
-        Fluttertoast.showToast(
-          msg: "Gallery permission required to use this feature",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.CENTER,
-        );
+        showToast();
         // Your code
       }).onGrantedCallback(() async {
         print("onGrantedCallback ");
@@ -240,11 +236,7 @@ class _ImagesViewPageState extends State<ImagesViewPage>
       permissionType.onDeniedCallback(() {
         print("onDeniedCallback ");
         Navigator.pop(context);
-        Fluttertoast.showToast(
-          msg: "Gallery permission required to use this feature",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.CENTER,
-        );
+        showToast();
         // Your code
       }).onGrantedCallback(() async {
         print("onGrantedCallback ");
@@ -731,7 +723,9 @@ class _ImagesViewPageState extends State<ImagesViewPage>
           if (widget.showImagePreview && multiSelectionValue.contains(image)) {
             int index =
                 multiSelectionValue.indexWhere((element) => element == image);
-            if (indexOfLatestImage != -1) {
+           // print("indexOfLatestImage "+indexOfLatestImage.toString());
+           //  print("indexOfLatestImage "+scaleOfCropsKeys.value.length.toString());
+            if (indexOfLatestImage != -1&&scaleOfCropsKeys.value.length!=0) {
               scaleOfCropsKeys.value[indexOfLatestImage] =
                   cropKey.value.currentState?.scale;
               areaOfCropsKeys.value[indexOfLatestImage] =
@@ -929,7 +923,7 @@ class _ImagesViewPageState extends State<ImagesViewPage>
     Fluttertoast.showToast(
       msg: "Gallery permission required to use this feature",
       toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.CENTER,
+      gravity: ToastGravity.BOTTOM,
     );
   }
 }
