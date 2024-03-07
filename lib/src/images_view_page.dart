@@ -497,11 +497,20 @@ class _ImagesViewPageState extends State<ImagesViewPage>
               scaleOfCropsKeys.value.add(cropKey.value.currentState?.scale);
               areaOfCropsKeys.value.add(cropKey.value.currentState?.area);
             } else {
-              if (indexOfLatestImage != -1) {
-                scaleOfCropsKeys.value[indexOfLatestImage] =
-                    cropKey.value.currentState?.scale;
-                areaOfCropsKeys.value[indexOfLatestImage] =
-                    cropKey.value.currentState?.area;
+              print("doneButton "+indexOfLatestImage.toString());
+              print("doneButton "+scaleOfCropsKeys.value.length.toString());
+              if (indexOfLatestImage != -1&&scaleOfCropsKeys.value.isNotEmpty) {
+                try {
+                  scaleOfCropsKeys.value[indexOfLatestImage] =
+                                      cropKey.value.currentState?.scale;
+                  areaOfCropsKeys.value[indexOfLatestImage] =
+                                      cropKey.value.currentState?.area;
+                } catch (e) {
+                  scaleOfCropsKeys.value[indexOfLatestImage-1] =
+                      cropKey.value.currentState?.scale;
+                  areaOfCropsKeys.value[indexOfLatestImage-1] =
+                      cropKey.value.currentState?.area;
+                }
               }
             }
 
@@ -725,7 +734,7 @@ class _ImagesViewPageState extends State<ImagesViewPage>
                 multiSelectionValue.indexWhere((element) => element == image);
            // print("indexOfLatestImage "+indexOfLatestImage.toString());
            //  print("indexOfLatestImage "+scaleOfCropsKeys.value.length.toString());
-            if (indexOfLatestImage != -1&&scaleOfCropsKeys.value.length!=0) {
+            if (indexOfLatestImage != -1&&scaleOfCropsKeys.value.isNotEmpty) {
               scaleOfCropsKeys.value[indexOfLatestImage] =
                   cropKey.value.currentState?.scale;
               areaOfCropsKeys.value[indexOfLatestImage] =
